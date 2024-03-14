@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  api:
+    image: fiber-user-management-api
+    container_name: fiber-user-management-api
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    volumes:
+      - ./publics:/app/publics
+    develop:
+      watch:
+        - path: ./go.mod
+          action: rebuild
+        - path: ./go.sum
+          action: rebuild
+        - path: .
+          target: /app
+          action: sync+restart
+          ignore:
+            - /publics
+    environment:
+      PORT: 5000
+      DB_HOST: db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: api_fiber_user_management
+      DB_PORT: 5432
+      SECRET_KEY: verysecret
+  db:
+    image: postgres
+    container_name: fiber-user-management-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: api_fiber_user_management
+    ports:
+      - 5432:5432
+    volumes:
+      - api_fiber_user_management:/data/db
+
+volumes:
+  api_fiber_user_management:

@@ -1,0 +1,4 @@
+publics/documents/*
+publics/images/*
+.env
+terminal.txt
